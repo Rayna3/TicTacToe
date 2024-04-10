@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import Popup from 'reactjs-popup';
+import 'reactjs-popup/dist/index.css';
 
 function Square({ value, onSquareClick }) {
   return (
@@ -84,14 +86,24 @@ export default function Game() {
   });
 
   return (
-    <div className="game">
-      <div className="game-board">
-        <Board xIsNext={xIsNext} squares={currentSquares} onPlay={handlePlay} />
+    <div style={{flexDirection: 'col'}}>
+      <div className="game">
+        <div className="game-board">
+          <Board xIsNext={xIsNext} squares={currentSquares} onPlay={handlePlay} />
+        </div>
+        <div className="game-info">
+          <ol>{moves}</ol>
+        </div>
       </div>
-      <div className="game-info">
-        <ol>{moves}</ol>
-      </div>
+        <Popup trigger={<button className={but} id='tut'> Tutorial </button>}
+            position="right center">
+            <div className='pop-up-title'>Tutorial</div>
+            <div>Set up: two player game, each player is assigned X or O</div>
+            <div>Goal: Have 3 Xs or Os in a row</div>
+            <div>Turn: Players alternate placing Xs and Os in 1 square per turn</div>
+        </Popup>
     </div>
+    
   );
 }
 
