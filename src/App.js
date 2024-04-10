@@ -1,14 +1,30 @@
 import { useState } from 'react';
 
-function Square({ value, onSquareClick }) {
-  return (
-    <button className="square" onClick={onSquareClick}>
-      {value}
-    </button>
-  );
+function Square({ value, onSquareClick, iter, win=false }) {
+  if (win === true) {
+    return(
+      <button className="square" style={{width:"208px", height: "208px"}} onClick={onSquareClick}>
+        {value}
+      </button>
+    )   
+  } else if (iter === 1) {
+    return (
+      <button className="square" style={{width:"70px", height: "70px"}} onClick={onSquareClick}>
+        {value}
+      </button>
+    );
+  } else {
+    return (
+        <button className="square">
+          <Game iter={iter - 1}></Game>
+        </button>
+    );
+  }
+  
 }
 
-function Board({ xIsNext, squares, onPlay }) {
+function Board({ xIsNext, squares, onPlay, iter }) {
+  const [player, setPlayer] = useState("X")
   function handleClick(i) {
     if (calculateWinner(squares) || squares[i]) {
       return;
@@ -20,6 +36,7 @@ function Board({ xIsNext, squares, onPlay }) {
       nextSquares[i] = 'O';
     }
     onPlay(nextSquares);
+    setPlayer(player === "X" ? 'O' : 'X')
   }
 
   const winner = calculateWinner(squares);
@@ -27,32 +44,59 @@ function Board({ xIsNext, squares, onPlay }) {
   if (winner) {
     status = 'Winner: ' + winner;
   } else {
-    status = 'Next player: ' + (xIsNext ? 'X' : 'O');
+    status = 'Next player: ' + player;
   }
-
-  return (
-    <>
-      <div className="status">{status}</div>
-      <div className="board-row">
-        <Square value={squares[0]} onSquareClick={() => handleClick(0)} />
-        <Square value={squares[1]} onSquareClick={() => handleClick(1)} />
-        <Square value={squares[2]} onSquareClick={() => handleClick(2)} />
-      </div>
-      <div className="board-row">
-        <Square value={squares[3]} onSquareClick={() => handleClick(3)} />
-        <Square value={squares[4]} onSquareClick={() => handleClick(4)} />
-        <Square value={squares[5]} onSquareClick={() => handleClick(5)} />
-      </div>
-      <div className="board-row">
-        <Square value={squares[6]} onSquareClick={() => handleClick(6)} />
-        <Square value={squares[7]} onSquareClick={() => handleClick(7)} />
-        <Square value={squares[8]} onSquareClick={() => handleClick(8)} />
-      </div>
-    </>
-  );
+  
+  if (winner != null) {
+    return(
+      <Square win={true} value={winner} onSquareClick={() => handleClick(0)} iter={iter} />
+    )
+  } else if (iter === 1) {
+    return (
+      <>
+        <div className="board-row">
+          <Square value={squares[0]} onSquareClick={() => handleClick(0)} iter={iter} />
+          <Square value={squares[1]} onSquareClick={() => handleClick(1)} iter={iter} />
+          <Square value={squares[2]} onSquareClick={() => handleClick(2)} iter={iter} />
+        </div>
+        <div className="board-row">
+          <Square value={squares[3]} onSquareClick={() => handleClick(3)} iter={iter} />
+          <Square value={squares[4]} onSquareClick={() => handleClick(4)} iter={iter} />
+          <Square value={squares[5]} onSquareClick={() => handleClick(5)} iter={iter} />
+        </div>
+        <div className="board-row">
+          <Square value={squares[6]} onSquareClick={() => handleClick(6)} iter={iter} />
+          <Square value={squares[7]} onSquareClick={() => handleClick(7)} iter={iter} />
+          <Square value={squares[8]} onSquareClick={() => handleClick(8)} iter={iter} />
+        </div>
+      </>
+    );
+  } else {
+    return (
+      <>
+        <div className="status">{status}</div>
+        <div className="board-row">
+          <Square value={squares[0]} onSquareClick={() => handleClick(0)} iter={iter} />
+          <Square value={squares[1]} onSquareClick={() => handleClick(1)} iter={iter} />
+          <Square value={squares[2]} onSquareClick={() => handleClick(2)} iter={iter} />
+        </div>
+        <div className="board-row">
+          <Square value={squares[3]} onSquareClick={() => handleClick(3)} iter={iter} />
+          <Square value={squares[4]} onSquareClick={() => handleClick(4)} iter={iter} />
+          <Square value={squares[5]} onSquareClick={() => handleClick(5)} iter={iter} />
+        </div>
+        <div className="board-row">
+          <Square value={squares[6]} onSquareClick={() => handleClick(6)} iter={iter} />
+          <Square value={squares[7]} onSquareClick={() => handleClick(7)} iter={iter} />
+          <Square value={squares[8]} onSquareClick={() => handleClick(8)} iter={iter} />
+        </div>
+      </>
+    );
+  }
+  
 }
 
-export default function Game() {
+export default function Game({iter=2}) {
   const [history, setHistory] = useState([Array(9).fill(null)]);
   const [currentMove, setCurrentMove] = useState(0);
   const [but, setBut] = useState('hist-but');
@@ -83,16 +127,28 @@ export default function Game() {
     );
   });
 
-  return (
-    <div className="game">
-      <div className="game-board">
-        <Board xIsNext={xIsNext} squares={currentSquares} onPlay={handlePlay} />
+  if (iter === 1) {
+    return (
+      <div className="game">
+        <div className="game-board">
+          <Board xIsNext={xIsNext} squares={currentSquares} onPlay={handlePlay} iter={iter} />
+        </div>
       </div>
-      <div className="game-info">
-        <ol>{moves}</ol>
+    );
+  } else {
+    return (
+      <div className="game">
+        <div className="game-board">
+          <Board xIsNext={xIsNext} squares={currentSquares} onPlay={handlePlay} iter={iter} />
+        </div>
+        <div className="game-info">
+          <ol>{moves}</ol>
+        </div>
       </div>
-    </div>
-  );
+    );
+  }
+
+  
 }
 
 function calculateWinner(squares) {
